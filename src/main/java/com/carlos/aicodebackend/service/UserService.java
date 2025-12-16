@@ -1,9 +1,15 @@
 package com.carlos.aicodebackend.service;
 
+import java.util.List;
+
+import com.carlos.aicodebackend.model.dto.UserQueryRequest;
 import com.carlos.aicodebackend.model.entity.User;
 import com.carlos.aicodebackend.model.vo.LoginUserVO;
+import com.carlos.aicodebackend.model.vo.UserVO;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 
+import cn.hutool.db.sql.Query;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -62,4 +68,27 @@ public interface UserService extends IService<User> {
    */
   boolean userLogout(HttpServletRequest request);
 
+  /**
+   * 用户脱敏信息
+   *
+   * @param request
+   * @return
+   */
+  UserVO getUserVO(User user);
+
+  /**
+   * 用户脱敏信息
+   *
+   * @param request
+   * @return
+   */
+  List<UserVO> getUserVOList(List<User> userList);
+
+  /**
+   * 获取查询条件
+   *
+   * @param user
+   * @return
+   */
+  QueryWrapper getQueryWrapper(UserQueryRequest UserQueryRequest);
 }
