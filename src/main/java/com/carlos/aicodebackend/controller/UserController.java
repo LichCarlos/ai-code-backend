@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.carlos.aicodebackend.common.BaseResponse;
+import com.carlos.aicodebackend.common.ResultUtils;
+import com.carlos.aicodebackend.exception.ErrorCode;
+import com.carlos.aicodebackend.exception.ThrowUtils;
+import com.carlos.aicodebackend.model.dto.UserRegisterRequest;
 import com.carlos.aicodebackend.model.entity.User;
 import com.carlos.aicodebackend.service.UserService;
 
@@ -27,6 +32,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @PostMapping("register")
+    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+        ThrowUtils.throwIf(userRegisterRequest == null, ErrorCode.PARAMS_ERROR);
+        String userAccount = userRegisterRequest.getUserAccount();
+        String userPassword = userRegisterRequest.getUserPassword();
+        String checkPassword = userRegisterRequest.getCheckPassword();
+        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        return ResultUtils.success(result);
+    }
 
     /**
      * 保存用户。

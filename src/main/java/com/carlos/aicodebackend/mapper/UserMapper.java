@@ -1,5 +1,7 @@
 package com.carlos.aicodebackend.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.carlos.aicodebackend.model.entity.User;
 import com.mybatisflex.core.BaseMapper;
 
@@ -8,6 +10,7 @@ import com.mybatisflex.core.BaseMapper;
  *
  * @author <a href="https://github.com/LichCarlos">LichCarlos</a>
  */
+@Mapper
 public interface UserMapper extends BaseMapper<User> {
 
 }
