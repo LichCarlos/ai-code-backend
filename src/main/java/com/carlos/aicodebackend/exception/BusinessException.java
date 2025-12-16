@@ -1,6 +1,5 @@
 package com.carlos.aicodebackend.exception;
 
-import com.carlos.aicodebackend.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
