@@ -3,17 +3,21 @@ package com.carlos.aicodebackend.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.carlos.aicodebackend.exception.BusinessException;
 import com.carlos.aicodebackend.exception.ErrorCode;
 import com.carlos.aicodebackend.mapper.UserMapper;
 import com.carlos.aicodebackend.model.entity.User;
 import com.carlos.aicodebackend.model.enums.UserRoleEnum;
+import com.carlos.aicodebackend.model.vo.LoginUserVO;
 import com.carlos.aicodebackend.service.UserService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import com.carlos.aicodebackend.constant.UserConstant;
 
 /**
  * 用户 服务层实现。
@@ -65,6 +69,74 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     // 盐值，混淆密码
     final String SALT = "carlos";
     return DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+  }
+
+  @Override
+  public LoginUserVO getLoginUserVO(User user) {
+    if (user == null) {
+      return null;
+    }
+    LoginUserVO loginUserVO = new LoginUserVO();
+    BeanUtil.copyProperties(user, loginUserVO);
+    return loginUserVO;
+  }
+
+  @Override
+  public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    // 1. 校验
+    if (StrUtil.hasBlank(userAccount, userPassword)) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+    }
+    if (userAccount.length() < 4) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
+    }
+    if (userPassword.length() < 8) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
+    }
+    // 2. 加密
+    String encryptPassword = getEncryptPassword(userPassword);
+    // 3.查询用户是否存在
+    QueryWrapper queryWrapper = new QueryWrapper();
+    queryWrapper.eq("userAccount", userAccount);
+    queryWrapper.eq("userPassword", encryptPassword);
+    User user = this.mapper.selectOneByQuery(queryWrapper);
+    // 用户不存在
+    if (user == null) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+    }
+    // 4. 记录用户的登录态.存储在session中
+    request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+    // 5. 获得脱敏后的用户信息
+    return this.getLoginUserVO(user);
+  }
+
+  @Override
+  public User getLoginUser(HttpServletRequest request) {
+    // 先判断是否已登录
+    Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+    User currentUser = (User) userObj;
+    if (currentUser == null || currentUser.getId() == null) {
+      throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+    }
+    // 从数据库查询（追求性能的话可以注释，直接返回上述结果）
+    long userId = currentUser.getId();
+    currentUser = this.getById(userId);
+    if (currentUser == null) {
+      throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+    }
+    return currentUser;
+  }
+
+  @Override
+  public boolean userLogout(HttpServletRequest request) {
+    // 先判断是否已登录
+    Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+    if (userObj == null) {
+      throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+    }
+    // 移除登录态
+    request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+    return true;
   }
 
 }
