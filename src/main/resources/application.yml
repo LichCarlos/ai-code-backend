@@ -1,27 +1,73 @@
 spring:
   application:
-    name:ai-code-backend
-
-    # mysql
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    name: ai-code-backend
+  profiles:
+    active: local # 默认激活 local，但可被外部覆盖
+  datasource: # 👈 直接在这里添加 datasource
     url: jdbc:mysql://localhost:3306/fox_ai_code
     username: root
     password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123456
+      ttl: 3600
+      # Redis 连接超时设置（毫秒）
+      timeout: 3000
+      # 连接池配置
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  # session 配置
+  session:
+    store-type: redis
+    # session 30 天过期（单位：秒）
+    timeout: 2592000
+    redis:
+      namespace: spring:session
 
 server:
   port: 8123
   servlet:
     context-path: /api
-# springdoc-openapi com/carlos/aicodebackend
+    # cookie 30 天过期（单位：秒）
+    session:
+      cookie:
+        max-age: 2592000
+
 springdoc:
   group-configs:
     - group: "default"
       packages-to-scan: com.carlos.aicodebackend.controller
-# knife4j
+
 knife4j:
   enable: true
   setting:
     language: zh_cn
+
 mybatis-flex:
   mapper-base-packages: com.carlos.aicodebackend.mapper
+
+# 公共 langchain4j 设置（不含密钥）
+langchain4j:
+  open-ai:
+    chat-model:
+      max-tokens: 8192
+      strict-json-schema: true
+      response-format: json_object
+      max-retries: 3
+    streaming-chat-model:
+      base-url: https://api.deepseek.com
+      model-name: deepseek-chat
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
+  # 禁用 Redis Embedding Store（如果不需要）
+  community:
+    redis:
+      enabled: false

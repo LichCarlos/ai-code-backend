@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理器 - 简单任务管理</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1><i class="fas fa-tasks"></i> 任务管理器</h1>
+            <p class="subtitle">简单高效地管理您的每日任务</p>
+        </header>
+
+        <main class="app-main">
+            <section class="task-input-section">
+                <div class="input-group">
+                    <input type="text" id="taskInput" placeholder="添加新任务..." maxlength="100">
+                    <button id="addTaskBtn" class="btn-primary">
+                        <i class="fas fa-plus"></i> 添加任务
+                    </button>
+                </div>
+                <div class="task-meta">
+                    <div class="priority-selector">
+                        <label for="prioritySelect">优先级：</label>
+                        <select id="prioritySelect">
+                            <option value="low">低</option>
+                            <option value="medium" selected>中</option>
+                            <option value="high">高</option>
+                        </select>
+                    </div>
+                    <div class="date-selector">
+                        <label for="dueDate">截止日期：</label>
+                        <input type="date" id="dueDate">
+                    </div>
+                </div>
+            </section>
+
+            <section class="task-filters">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">全部任务</button>
+                    <button class="filter-btn" data-filter="active">待办任务</button>
+                    <button class="filter-btn" data-filter="completed">已完成</button>
+                </div>
+                <div class="stats">
+                    <span id="taskCount">0 个任务</span>
+                    <button id="clearCompletedBtn" class="btn-secondary">清除已完成</button>
+                </div>
+            </section>
+
+            <section class="task-list-section">
+                <div class="task-list-header">
+                    <h2><i class="fas fa-list-check"></i> 任务列表</h2>
+                    <div class="sort-options">
+                        <label for="sortSelect">排序：</label>
+                        <select id="sortSelect">
+                            <option value="added">添加时间</option>
+                            <option value="priority">优先级</option>
+                            <option value="dueDate">截止日期</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="task-list-container">
+                    <ul id="taskList">
+                        <!-- 任务将通过JavaScript动态添加 -->
+                    </ul>
+                    
+                    <div id="emptyState" class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>暂无任务</h3>
+                        <p>添加您的第一个任务开始管理您的一天</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2023 任务管理器 | 已保存 <span id="savedTasksCount">0</span> 个任务</p>
+            <div class="footer-actions">
+                <button id="exportBtn" class="btn-secondary">
+                    <i class="fas fa-download"></i> 导出任务
+                </button>
+                <button id="importBtn" class="btn-secondary">
+                    <i class="fas fa-upload"></i> 导入任务
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 导入任务模态框 -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>导入任务</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="importData" placeholder="粘贴任务数据..."></textarea>
+                <p class="modal-hint">请粘贴之前导出的任务数据</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelImportBtn" class="btn-secondary">取消</button>
+                <button id="confirmImportBtn" class="btn-primary">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

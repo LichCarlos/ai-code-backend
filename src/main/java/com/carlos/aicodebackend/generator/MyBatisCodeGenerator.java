@@ -1,5 +1,8 @@
 package com.carlos.aicodebackend.generator;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.mybatisflex.codegen.Generator;
@@ -12,7 +15,7 @@ import cn.hutool.setting.yaml.YamlUtil;
 public class MyBatisCodeGenerator {
 
         // 需要生成的表名
-        private static final String[] TABLE_NAMES = { "user" };
+        private static final String[] TABLE_NAMES = { "chat_history" };
 
         public static void main(String[] args) {
                 // 获取数据源信息
